@@ -1,13 +1,20 @@
 define(['jquery'], function ($) {
-  
-  var cache = {};
-  var setImageFromCache = function(image, el) {
-    encImage = cache[image];
     
-    if (typeof(encImage) == 'undefined' || encImage == null) {
-      throw Error('Invalid cached image "' + image + '" selected.');
-    } else {
-      el.css('backgroundImage', 'url("data:image/svg+xml;base64,' + cache[image] + '")');
+  var Util = {
+    cache: {},
+    
+    setImage: function(image, el) {
+      el.css('backgroundImage', 'url("data:image/svg+xml;base64,' + image + '")');
+    },
+  
+    setImageFromCache: function(image, el) {
+      encImage = this.cache[image];
+    
+      if (typeof(encImage) == 'undefined' || encImage == null) {
+        throw Error('Invalid cached image "' + image + '" selected.');
+      } else {
+        this.setImage(encImage, el);
+      }
     }
   };
     
@@ -86,24 +93,35 @@ define(['jquery'], function ($) {
       
       images.each(function() {
         var image = $(this).attr('data-svgimage');
-        _ref.setBackgroundImage($(this), image);
+        _ref.setBackgroundImageByName($(this), image);
       });
+    },
+    
+    addImageToCache: function(name, image) {
+      Util.cache[name] = window.btoa(image);
+    },
+    
+    setBackgroundImageByName: function(selector, image) {
+      var _ref = this;
+      var el = selector instanceof jQuery ? selector : $(selector);
+      
+      if (typeof(Util.cache[image]) == 'undefined') {
+        require(['net/meisen/ui/svglibrary/' + image], function(value) {
+          _ref.addImageToCache(image, value);
+          Util.setImageFromCache(image, el);
+        }, function() {
+          throw Error('Unavailable image "' + image + '" selected.');
+        });
+      } else {
+        Util.setImageFromCache(image, el);
+      }
     },
     
     setBackgroundImage: function(selector, image) {
       var _ref = this;
       var el = selector instanceof jQuery ? selector : $(selector);
       
-      if (typeof(cache[image]) == 'undefined') {
-        require(['net/meisen/ui/svglibrary/' + image], function(value) {
-          cache[image] = window.btoa(value);
-          setImageFromCache(image, el);
-        }, function() {
-          throw Error('Unavailable image "' + image + '" selected.');
-        });
-      } else {
-        setImageFromCache(image, el);
-      }
+      Util.setImage(window.btoa(image), el);
     }
   };
 });
