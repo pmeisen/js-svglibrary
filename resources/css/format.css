@@ -1,0 +1,25 @@
+body {
+  font-family: Calibri, sans-serif;
+  color      : #553500;
+  font-size  : 20px;
+  font-weight: bold;
+}
+
+ul {
+  background: #FFFFFF;
+  width: 720px;
+  margin: auto;
+  margin-top: 60px;
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  width: 180px;
+  height: 180px;
+  float: left;
+  border: 1px #000000 solid;
+  
+  background-repeat: no-repeat;
+  background-position: center center;
+}
