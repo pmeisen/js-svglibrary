@@ -122,6 +122,57 @@ define(['jquery'], function ($) {
       var el = selector instanceof jQuery ? selector : $(selector);
       
       Util.setImage(window.btoa(image), el);
+    },
+    
+    /**
+     * Helper method to modify or add a transformation to a SVG
+     * DOM-element. Transformations are like classes, multiple
+     * of these can be added by space-separation, e.g.:
+     *   transform="translate(30) rotate(45 50 50)"
+     * This method helps to modify a specific functions values, 
+     * without modifying the other values.
+     */
+    modifyTransform: function(el, func, value) {
+      el = el instanceof jQuery ? el : $(el);
+      func = func.toLowerCase();
+      
+      var transform = el.attr('transform');
+      if (typeof(transform) == 'undefined' || transform == null) {
+        el.attr('transform', func + '(' + value + ')');
+      } else {
+        var calls = transform.split(/[ ,](?=[^\)]*(?:\(|$))/);
+        var lenCalls = calls.length;
+        
+        var found = false;
+        var counter = 0;
+        var newTransform = '';
+        for (var i = 0; i < lenCalls; i++) {
+          if (counter > 0) {
+            newTransform += ' ';
+          }
+          
+          var call = calls[i].toLowerCase();
+          if (!found && call.indexOf(func + '(') == 0) {
+            
+            // if the value is null the transform should be removed
+            if (value != null) {
+              newTransform += func + '(' + value + ')';
+              counter++;
+            }
+            found = true;
+          } else {
+            newTransform += call;
+            counter++;
+          }
+        }
+        
+        // if not found just append it
+        if (!found) {
+          newTransform += ' ' + func + '(' + value + ')';
+        }
+        
+        el.attr('transform', newTransform);
+      }
     }
   };
 });
