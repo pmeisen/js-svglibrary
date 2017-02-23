@@ -135,8 +135,8 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         flatten: false,
-                        cwd: bowerPaths.bowerDirectory + '/jquery/dist/jquery.min.js',
-                        src: '**/*',
+                        cwd: bowerPaths.bowerDirectory + '/jquery/dist',
+                        src: 'jquery.min.js',
                         dest: 'www-dist/scripts'
                     },
                     {expand: true, flatten: false, cwd: 'dist', src: '**/*', dest: 'www-dist/scripts'},
