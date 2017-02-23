@@ -1,12 +1,12 @@
 {
   "name": "js-svglibrary",
-  "version": "0.0.6",
+  "version": "0.0.1",
   "description": "JavaScript Library with some collected, free to use SVG images.",
   "authors": [
     "Philipp Meisen <philipp@meisen.net>"
   ],
   "scripts": {
-    "test": "grunt 03-run-test-suite"
+    "test": "grunt 02-compile-sources"
   },
   "main": "dist/js-svglibrary.js",
   "repository": {

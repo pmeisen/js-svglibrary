@@ -1,6 +1,6 @@
 {
   "name": "js-svglibrary",
-  "version": "0.0.6",
+  "version": "0.0.1",
   "description": "JavaScript Library with some collected, free to use SVG images.",
   "authors": [
     "Philipp Meisen <philipp@meisen.net>"
@@ -21,7 +21,7 @@
   "private": false,
   "dependencies": {},
   "devDependencies": {
-    "jquery": ">=1.0.0",
+    "jquery": ">=1.5.0",
     "almond": "0.3.3",
     "requirejs": "2.3.3",
     "qunit": "2.1.1"

@@ -8,10 +8,10 @@ define(['jquery'], function ($) {
         },
 
         setImageFromCache: function (image, el) {
-            encImage = this.cache[image];
+            var encImage = this.cache[image];
 
             if (typeof(encImage) == 'undefined' || encImage == null) {
-                throw Error('Invalid cached image "' + image + '" selected.');
+                throw new Error('Invalid cached image "' + image + '" selected.');
             } else {
                 this.setImage(encImage, el);
             }
@@ -85,35 +85,44 @@ define(['jquery'], function ($) {
             });
         },
 
-        load: function (selector) {
+        setBackgroundImageByAttribute: function (selector) {
             var _ref = this;
 
             var els = selector instanceof jQuery ? selector : $(selector);
             var images = els.filter('[data-svgimage]');
 
             images.each(function () {
-                var image = $(this).attr('data-svgimage');
-                _ref.setBackgroundImageByName($(this), image);
+                var el = $(this);
+                var image = el.attr('data-svgimage');
+                _ref.loadImageIntoCache(image, image, function() {
+                    _ref.setBackgroundImageByName(el, image);
+                });
             });
+        },
+
+        loadImageIntoCache: function(name, image, callback) {
+            var _ref = this;
+
+            $.get(image, function (data) {
+                _ref.addImageToCache(name, data);
+
+                if (typeof callback === 'function') {
+                    callback(name);
+                }
+            }, 'text');
         },
 
         addImageToCache: function (name, image) {
             Util.cache[name] = window.btoa(image);
         },
 
-        setBackgroundImageByName: function (selector, image) {
-            var _ref = this;
+        setBackgroundImageByName: function (selector, name) {
             var el = selector instanceof jQuery ? selector : $(selector);
 
-            if (typeof(Util.cache[image]) === 'undefined') {
-                require([image], function (value) {
-                    _ref.addImageToCache(image, value);
-                    Util.setImageFromCache(image, el);
-                }, function () {
-                    throw Error('Unavailable image "' + image + '" selected.');
-                });
+            if (typeof(Util.cache[name]) === 'undefined') {
+                throw new Error('The image "' + name + '" could not be found.');
             } else {
-                Util.setImageFromCache(image, el);
+                Util.setImageFromCache(name, el);
             }
         },
 
