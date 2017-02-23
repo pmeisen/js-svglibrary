@@ -156,14 +156,6 @@ define(['jquery'], function ($) {
             Util.setImage(window.btoa(image), els);
         },
 
-        /**
-         * Helper method to modify or add a transformation to a SVG
-         * DOM-element. Transformations are like classes, multiple
-         * of these can be added by space-separation, e.g.:
-         *   transform="translate(30) rotate(45 50 50)"
-         * This method helps to modify a specific functions values,
-         * without modifying the other values.
-         */
         modifyTransform: function (selector, func, value) {
             var els = Util.el(selector);
             func = func.toLowerCase();
