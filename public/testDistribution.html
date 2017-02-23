@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Example using the minified SVGLibrary</title>
+
+    <script src="/scripts/jquery.min.js"></script>
+    <script src="/scripts/js-svglibrary.min.js"></script>
+    <script>
+        SvgLibrary.applyRandomColorPairs('ul li');
+        SvgLibrary.load('ul li');
+
+        // just an example, images that are used often should be cached under a name
+        SvgLibrary.addImageToCache('ls', loadingSpin);
+
+        // add an remove the background
+        $('ul li:not([data-svgimage])').click(function() {
+            var filtered = $(this).filter('[style*="background-image"]');
+
+            if (filtered.length == 0) {
+
+                // use the cached image
+                SvgLibrary.setBackgroundImageByName($(this), 'ls');
+                $(this).children().hide();
+            } else {
+                $(this).css('backgroundImage', '');
+                $(this).children().show();
+            }
+        });
+    </script>
+</head>
+<body>
+<ul>
+    <li data-svgimage="LoadingCircles" ></li>
+    <li data-svgimage="LoadingCircleSpin"></li>
+    <li style="line-height: 180px; text-align: center; cursor: pointer"><span>Click Me</span></li>
+</ul>
+</body>
+</html>

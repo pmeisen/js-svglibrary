@@ -1,0 +1,29 @@
+{
+  "name": "js-svglibrary",
+  "version": "0.0.2",
+  "description": "JavaScript Library with some collected, free to use SVG images.",
+  "authors": [
+    "Philipp Meisen <philipp@meisen.net>"
+  ],
+  "main": "dist/js-svglibrary.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pmeisen/js-svglibrary",
+    "bump": "git://github.com/pmeisen/js-svglibrary.git"
+  },
+  "keywords": [
+    "utility",
+    "misc",
+    "miscellaneous",
+    "svg"
+  ],
+  "license": "MIT",
+  "private": false,
+  "dependencies": {},
+  "devDependencies": {
+    "jquery": ">=1.0.0",
+    "almond": "0.3.3",
+    "requirejs": "2.3.3",
+    "qunit": "2.1.1"
+  }
+}
