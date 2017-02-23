@@ -9,38 +9,27 @@
     <link rel="stylesheet" type="text/css" href="css/reset.css"/>
     <link rel="stylesheet" type="text/css" href="css/format.css"/>
 
-    <script src="/scripts/jquery.min.js"></script>
     <script src="/scripts/js-svglibrary.js"></script>
-    <script>
-        $(document).ready(function () {
-            SvgLibrary.applyRandomColorPairs('ul li');
-            SvgLibrary.setBackgroundImageByAttribute('ul li');
-
-            // just an example, images that are used often should be cached under a name
-            SvgLibrary.loadImageIntoCache('ls', 'svg/LoadingSpin.svg');
-
-            // add an remove the background
-            $('ul li:not([data-svgimage])').click(function () {
-                var filtered = $(this).filter('[style*="background-image"]');
-
-                if (filtered.length == 0) {
-
-                    // use the cached image
-                    SvgLibrary.setBackgroundImageByName($(this), 'ls');
-                    $(this).children().hide();
-                } else {
-                    $(this).css('backgroundImage', '');
-                    $(this).children().show();
-                }
-            });
-        });
-    </script>
 </head>
 <body>
 <ul>
-    <li data-svgimage="svg/LoadingCircles.svg"></li>
-    <li data-svgimage="svg/LoadingCircleSpin.svg"></li>
-    <li style="line-height: 180px; text-align: center; cursor: pointer"><span>Click Me</span></li>
+    <li data-svgimage-url="svg/LoadingCircles.svg"></li>
+    <li data-svgimage="LoadingCircleSpin"></li>
+    <li id='clickExample' style="line-height: 180px; text-align: center; cursor: pointer"><span>Click Me</span></li>
 </ul>
+
+<script>
+    SvgLibrary.applyRandomColorPairs('ul li');
+    SvgLibrary.setBackgroundImageByAttribute('ul li');
+
+    // just an example, images that are used often should be cached under a name
+    SvgLibrary.loadImageFromUrl('ls', 'svg/LoadingSpin.svg');
+
+    // add an remove the background
+    document.getElementById('clickExample').onclick = function () {
+        SvgLibrary.setBackgroundImageByName(this, 'ls');
+        this.textContent = '';
+    };
+</script>
 </body>
 </html>

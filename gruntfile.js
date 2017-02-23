@@ -132,13 +132,6 @@ module.exports = function (grunt) {
             },
             dist: {
                 files: [
-                    {
-                        expand: true,
-                        flatten: false,
-                        cwd: bowerPaths.bowerDirectory + '/jquery/dist',
-                        src: 'jquery.min.js',
-                        dest: 'www-dist/scripts'
-                    },
                     {expand: true, flatten: false, cwd: 'src/net/meisen/ui/svglibrary/svg', src: '**/*.svg', dest: 'www-dist/svg'},
                     {expand: true, flatten: false, cwd: 'dist', src: '**/*', dest: 'www-dist/scripts'},
                     {expand: true, flatten: false, cwd: 'public/css', src: '**/*', dest: 'www-dist/css'},

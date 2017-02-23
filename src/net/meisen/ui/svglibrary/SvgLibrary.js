@@ -15,10 +15,26 @@ define(['jquery'], function ($) {
             } else {
                 this.setImage(encImage, el);
             }
+        },
+
+        el: function (selector) {
+            if (selector instanceof $) {
+                return selector;
+            } else if (typeof selector === 'string') {
+                return $(selector);
+            } else if (selector instanceof Element) {
+                return $(selector);
+            } else {
+                console.log('Unexpected selector: ', selector);
+                return $(selector);
+            }
         }
     };
 
     return {
+        svgUrlAttr: 'data-svgimage-url',
+        svgNameAttr: 'data-svgimage',
+
         randomColor: function () {
             var letters = '0123456789ABCDEF'.split('');
             var color = '#';
@@ -55,7 +71,7 @@ define(['jquery'], function ($) {
         },
 
         applyRandomColors: function (selector, style) {
-            var els = selector instanceof jQuery ? selector : $(selector);
+            var els = Util.el(selector);
 
             var _ref = this;
             els.each(function () {
@@ -73,37 +89,46 @@ define(['jquery'], function ($) {
         },
 
         applyRandomColorPairs: function (selector) {
-            var els = selector instanceof jQuery ? selector : $(selector);
+            var els = Util.el(selector);
 
             var _ref = this;
             els.each(function () {
+                var el = $(this);
                 var color1 = _ref.randomColor();
                 var color2 = _ref.complementaryColor(color1);
 
-                $(this).css('backgroundColor', color1);
-                $(this).css('color', color2);
+                el.css('backgroundColor', color1);
+                el.css('color', color2);
             });
         },
 
         setBackgroundImageByAttribute: function (selector) {
             var _ref = this;
 
-            var els = selector instanceof jQuery ? selector : $(selector);
-            var images = els.filter('[data-svgimage]');
-
-            images.each(function () {
+            var els = Util.el(selector);
+            var urlImages = els.filter('[' + this.svgUrlAttr + ']');
+            urlImages.each(function () {
                 var el = $(this);
-                var image = el.attr('data-svgimage');
-                _ref.loadImageIntoCache(image, image, function() {
+                var image = el.attr(_ref.svgUrlAttr);
+
+                _ref.loadImageFromUrl(image, image, function () {
                     _ref.setBackgroundImageByName(el, image);
                 });
             });
+
+            var namedImages = els.filter('[' + this.svgNameAttr + ']');
+            namedImages.each(function () {
+                var el = $(this);
+                var name = el.attr(_ref.svgNameAttr);
+
+                _ref.setBackgroundImageByName(el, name);
+            });
         },
 
-        loadImageIntoCache: function(name, image, callback) {
+        loadImageFromUrl: function (name, url, callback) {
             var _ref = this;
 
-            $.get(image, function (data) {
+            $.get(url, function (data) {
                 _ref.addImageToCache(name, data);
 
                 if (typeof callback === 'function') {
@@ -117,18 +142,18 @@ define(['jquery'], function ($) {
         },
 
         setBackgroundImageByName: function (selector, name) {
-            var el = selector instanceof jQuery ? selector : $(selector);
+            var els = Util.el(selector);
 
             if (typeof(Util.cache[name]) === 'undefined') {
                 throw new Error('The image "' + name + '" could not be found.');
             } else {
-                Util.setImageFromCache(name, el);
+                Util.setImageFromCache(name, els);
             }
         },
 
         setBackgroundImage: function (selector, image) {
-            var el = selector instanceof jQuery ? selector : $(selector);
-            Util.setImage(window.btoa(image), el);
+            var els = Util.el(selector);
+            Util.setImage(window.btoa(image), els);
         },
 
         /**
@@ -139,13 +164,13 @@ define(['jquery'], function ($) {
          * This method helps to modify a specific functions values,
          * without modifying the other values.
          */
-        modifyTransform: function (el, func, value) {
-            el = el instanceof jQuery ? el : $(el);
+        modifyTransform: function (selector, func, value) {
+            var els = Util.el(selector);
             func = func.toLowerCase();
 
-            var transform = el.attr('transform');
+            var transform = els.attr('transform');
             if (typeof(transform) == 'undefined' || transform == null) {
-                el.attr('transform', func + '(' + value + ')');
+                els.attr('transform', func + '(' + value + ')');
             } else {
                 var calls = transform.split(/[ ,](?=[^\)]*(?:\(|$))/);
                 var lenCalls = calls.length;
@@ -178,7 +203,7 @@ define(['jquery'], function ($) {
                     newTransform += ' ' + func + '(' + value + ')';
                 }
 
-                el.attr('transform', newTransform);
+                els.attr('transform', newTransform);
             }
         }
     };

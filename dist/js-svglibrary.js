@@ -10674,10 +10674,26 @@ define('net/meisen/ui/svglibrary/SvgLibrary',['jquery'], function ($) {
             } else {
                 this.setImage(encImage, el);
             }
+        },
+
+        el: function (selector) {
+            if (selector instanceof $) {
+                return selector;
+            } else if (typeof selector === 'string') {
+                return $(selector);
+            } else if (selector instanceof Element) {
+                return $(selector);
+            } else {
+                console.log('Unexpected selector: ', selector);
+                return $(selector);
+            }
         }
     };
 
     return {
+        svgUrlAttr: 'data-svgimage-url',
+        svgNameAttr: 'data-svgimage',
+
         randomColor: function () {
             var letters = '0123456789ABCDEF'.split('');
             var color = '#';
@@ -10714,7 +10730,7 @@ define('net/meisen/ui/svglibrary/SvgLibrary',['jquery'], function ($) {
         },
 
         applyRandomColors: function (selector, style) {
-            var els = selector instanceof jQuery ? selector : $(selector);
+            var els = Util.el(selector);
 
             var _ref = this;
             els.each(function () {
@@ -10732,37 +10748,46 @@ define('net/meisen/ui/svglibrary/SvgLibrary',['jquery'], function ($) {
         },
 
         applyRandomColorPairs: function (selector) {
-            var els = selector instanceof jQuery ? selector : $(selector);
+            var els = Util.el(selector);
 
             var _ref = this;
             els.each(function () {
+                var el = $(this);
                 var color1 = _ref.randomColor();
                 var color2 = _ref.complementaryColor(color1);
 
-                $(this).css('backgroundColor', color1);
-                $(this).css('color', color2);
+                el.css('backgroundColor', color1);
+                el.css('color', color2);
             });
         },
 
         setBackgroundImageByAttribute: function (selector) {
             var _ref = this;
 
-            var els = selector instanceof jQuery ? selector : $(selector);
-            var images = els.filter('[data-svgimage]');
-
-            images.each(function () {
+            var els = Util.el(selector);
+            var urlImages = els.filter('[' + this.svgUrlAttr + ']');
+            urlImages.each(function () {
                 var el = $(this);
-                var image = el.attr('data-svgimage');
-                _ref.loadImageIntoCache(image, image, function() {
+                var image = el.attr(_ref.svgUrlAttr);
+
+                _ref.loadImageFromUrl(image, image, function () {
                     _ref.setBackgroundImageByName(el, image);
                 });
             });
+
+            var namedImages = els.filter('[' + this.svgNameAttr + ']');
+            namedImages.each(function () {
+                var el = $(this);
+                var name = el.attr(_ref.svgNameAttr);
+
+                _ref.setBackgroundImageByName(el, name);
+            });
         },
 
-        loadImageIntoCache: function(name, image, callback) {
+        loadImageFromUrl: function (name, url, callback) {
             var _ref = this;
 
-            $.get(image, function (data) {
+            $.get(url, function (data) {
                 _ref.addImageToCache(name, data);
 
                 if (typeof callback === 'function') {
@@ -10776,18 +10801,18 @@ define('net/meisen/ui/svglibrary/SvgLibrary',['jquery'], function ($) {
         },
 
         setBackgroundImageByName: function (selector, name) {
-            var el = selector instanceof jQuery ? selector : $(selector);
+            var els = Util.el(selector);
 
             if (typeof(Util.cache[name]) === 'undefined') {
                 throw new Error('The image "' + name + '" could not be found.');
             } else {
-                Util.setImageFromCache(name, el);
+                Util.setImageFromCache(name, els);
             }
         },
 
         setBackgroundImage: function (selector, image) {
-            var el = selector instanceof jQuery ? selector : $(selector);
-            Util.setImage(window.btoa(image), el);
+            var els = Util.el(selector);
+            Util.setImage(window.btoa(image), els);
         },
 
         /**
@@ -10798,13 +10823,13 @@ define('net/meisen/ui/svglibrary/SvgLibrary',['jquery'], function ($) {
          * This method helps to modify a specific functions values,
          * without modifying the other values.
          */
-        modifyTransform: function (el, func, value) {
-            el = el instanceof jQuery ? el : $(el);
+        modifyTransform: function (selector, func, value) {
+            var els = Util.el(selector);
             func = func.toLowerCase();
 
-            var transform = el.attr('transform');
+            var transform = els.attr('transform');
             if (typeof(transform) == 'undefined' || transform == null) {
-                el.attr('transform', func + '(' + value + ')');
+                els.attr('transform', func + '(' + value + ')');
             } else {
                 var calls = transform.split(/[ ,](?=[^\)]*(?:\(|$))/);
                 var lenCalls = calls.length;
@@ -10837,28 +10862,150 @@ define('net/meisen/ui/svglibrary/SvgLibrary',['jquery'], function ($) {
                     newTransform += ' ' + func + '(' + value + ')';
                 }
 
-                el.attr('transform', newTransform);
+                els.attr('transform', newTransform);
             }
         }
     };
 });
+define('net/meisen/ui/svglibrary/required-svg/LoadingCircles',[], function () {
+
+    /*
+     * By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL
+     *
+     * https://github.com/SamHerbert/SVG-Loaders/tree/master/svg-loaders
+     */
+    var svg = '';
+    svg += '<svg width="58" height="58" viewBox="0 0 58 58" xmlns="http://www.w3.org/2000/svg">';
+    svg += '<g fill="none" fill-rule="evenodd">';
+    svg += '<g transform="translate(2 1)" stroke="#FFF" stroke-width="1.5">';
+    svg += '<circle cx="42.601" cy="11.462" r="5" fill-opacity="1" fill="#fff">';
+    svg += '<animate attributeName="fill-opacity" begin="0s" dur="1.3s" values="1;0;0;0;0;0;0;0" calcMode="linear" repeatCount="indefinite" />';
+    svg += '</circle>';
+    svg += '<circle cx="49.063" cy="27.063" r="5" fill-opacity="0" fill="#fff">';
+    svg += '<animate attributeName="fill-opacity" begin="0s" dur="1.3s" values="0;1;0;0;0;0;0;0" calcMode="linear" repeatCount="indefinite" />';
+    svg += '</circle>';
+    svg += '<circle cx="42.601" cy="42.663" r="5" fill-opacity="0" fill="#fff">';
+    svg += '<animate attributeName="fill-opacity" begin="0s" dur="1.3s" values="0;0;1;0;0;0;0;0" calcMode="linear" repeatCount="indefinite" />';
+    svg += '</circle>';
+    svg += '<circle cx="27" cy="49.125" r="5" fill-opacity="0" fill="#fff">';
+    svg += '<animate attributeName="fill-opacity" begin="0s" dur="1.3s" values="0;0;0;1;0;0;0;0" calcMode="linear" repeatCount="indefinite" />';
+    svg += '</circle>';
+    svg += '<circle cx="11.399" cy="42.663" r="5" fill-opacity="0" fill="#fff">';
+    svg += '<animate attributeName="fill-opacity" begin="0s" dur="1.3s" values="0;0;0;0;1;0;0;0" calcMode="linear" repeatCount="indefinite" />';
+    svg += '</circle>';
+    svg += '<circle cx="4.938" cy="27.063" r="5" fill-opacity="0" fill="#fff">';
+    svg += '<animate attributeName="fill-opacity" begin="0s" dur="1.3s" values="0;0;0;0;0;1;0;0" calcMode="linear" repeatCount="indefinite" />';
+    svg += '</circle>';
+    svg += '<circle cx="11.399" cy="11.462" r="5" fill-opacity="0" fill="#fff">';
+    svg += '<animate attributeName="fill-opacity" begin="0s" dur="1.3s" values="0;0;0;0;0;0;1;0" calcMode="linear" repeatCount="indefinite" />';
+    svg += '</circle>';
+    svg += '<circle cx="27" cy="5" r="5" fill-opacity="0" fill="#fff">';
+    svg += '<animate attributeName="fill-opacity" begin="0s" dur="1.3s" values="0;0;0;0;0;0;0;1" calcMode="linear" repeatCount="indefinite" />';
+    svg += '</circle>';
+    svg += '</g>';
+    svg += '</g>';
+    svg += '</svg>';
+
+    return svg;
+});
+define('net/meisen/ui/svglibrary/required-svg/LoadingCircleSpin',[], function () {
+
+    /*
+     * By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL
+     *
+     * https://github.com/SamHerbert/SVG-Loaders/tree/master/svg-loaders
+     */
+    var svg = '';
+    svg += '<svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg" stroke="#fff">';
+    svg += '<g fill="none" fill-rule="evenodd">';
+    svg += '<g transform="translate(1 1)" stroke-width="2">';
+    svg += '<circle stroke-opacity=".5" cx="18" cy="18" r="18"/>';
+    svg += '<path d="M36 18c0-9.94-8.06-18-18-18">';
+    svg += '<animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="1s" repeatCount="indefinite"/>';
+    svg += '</path>';
+    svg += '</g>';
+    svg += '</g>';
+    svg += '</svg>';
+
+    return svg;
+});
+define('net/meisen/ui/svglibrary/required-svg/LoadingSpin',[], function () {
+
+    /*
+     * By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL
+     *
+     * https://github.com/SamHerbert/SVG-Loaders/tree/master/svg-loaders
+     */
+    var svg = '';
+    svg += '<svg width="38" height="38" viewBox="0 0 38 38" xmlns="http://www.w3.org/2000/svg">';
+    svg += '<defs>';
+    svg += '<linearGradient x1="8.042%" y1="0%" x2="65.682%" y2="23.865%" id="a">';
+    svg += '<stop stop-color="#fff" stop-opacity="0" offset="0%"/>';
+    svg += '<stop stop-color="#fff" stop-opacity=".631" offset="63.146%"/>';
+    svg += '<stop stop-color="#fff" offset="100%"/>';
+    svg += '</linearGradient>';
+    svg += '</defs>';
+    svg += '<g fill="none" fill-rule="evenodd">';
+    svg += '<g transform="translate(1 1)">';
+    svg += '<path d="M36 18c0-9.94-8.06-18-18-18" id="Oval-2" stroke="url(#a)" stroke-width="2">';
+    svg += '<animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="0.9s" repeatCount="indefinite" />';
+    svg += '</path>';
+    svg += '<circle fill="#fff" cx="36" cy="18" r="1">';
+    svg += '<animateTransform attributeName="transform" type="rotate" from="0 18 18" to="360 18 18" dur="0.9s" repeatCount="indefinite" />';
+    svg += '</circle>';
+    svg += '</g>';
+    svg += '</g>';
+    svg += '</svg>';
+
+    return svg;
+});
+define('jquery-private',['jquery'], function ($) {
+    return $.noConflict(true);
+});
 // define the baseUrl
 requirejs.config({
-    baseUrl: 'scripts'
+    baseUrl: 'scripts',
+
+    // see http://requirejs.org/docs/jquery.html
+    map: {
+        '*': { 'jquery': 'jquery-private' },
+        'jquery-private': { 'jquery': 'jquery' }
+    }
 });
 
 // make sure the different instances are loaded
-require(['net/meisen/ui/svglibrary/SvgLibrary']);
+require(['net/meisen/ui/svglibrary/SvgLibrary',
+    'net/meisen/ui/svglibrary/required-svg/LoadingCircles',
+    'net/meisen/ui/svglibrary/required-svg/LoadingCircleSpin',
+    'net/meisen/ui/svglibrary/required-svg/LoadingSpin',
+    'jquery-private'
+], function(SvgLibrary, LoadingCircles, LoadingCircleSpin, LoadingSpin) {});
 
 // actually retrieve the loaded instances
 var instance = {
-    SvgLibrary: require('net/meisen/ui/svglibrary/SvgLibrary')
+    SvgLibrary: require('net/meisen/ui/svglibrary/SvgLibrary'),
+
+    images: {
+        'LoadingCircles': require('net/meisen/ui/svglibrary/required-svg/LoadingCircles'),
+        'LoadingCircleSpin': require('net/meisen/ui/svglibrary/required-svg/LoadingCircleSpin'),
+        'LoadingSpin': require('net/meisen/ui/svglibrary/required-svg/LoadingSpin')
+    }
 };
 
 // we are using the system within a browser
 if (typeof window !== 'undefined') {
     for (var property in instance) {
+
         if (instance.hasOwnProperty(property)) {
+            if (property === 'images' && typeof instance[property] === 'object') {
+                var images = instance[property];
+                for (var name in images) {
+                    if (images.hasOwnProperty(name)) {
+                        SvgLibrary.addImageToCache(name, images[name]);
+                    }
+                }
+            }
+
             window[property] = instance[property];
         }
     }
