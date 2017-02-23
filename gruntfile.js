@@ -139,6 +139,7 @@ module.exports = function (grunt) {
                         src: 'jquery.min.js',
                         dest: 'www-dist/scripts'
                     },
+                    {expand: true, flatten: false, cwd: 'src/net/meisen/ui/svglibrary', src: '**/*', dest: 'www-dist/scripts'},
                     {expand: true, flatten: false, cwd: 'dist', src: '**/*', dest: 'www-dist/scripts'},
                     {expand: true, flatten: false, cwd: 'public', src: 'testDistribution.html', dest: 'www-dist'}
                 ]

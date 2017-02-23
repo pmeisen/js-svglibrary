@@ -6,7 +6,7 @@ requirejs.config({
 // now start the entry-point
 require(['jquery',
   'net/meisen/ui/svglibrary/SvgLibrary',
-  'net/meisen/ui/svglibrary/LoadingSpin'], function($, svglib, loadingSpin) {
+  'net/meisen/ui/svglibrary/svg/LoadingSpin'], function($, svglib, loadingSpin) {
 
   svglib.applyRandomColorPairs('ul li');
   svglib.load('ul li');
