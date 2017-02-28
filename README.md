@@ -1,4 +1,5 @@
 # js-svglibrary
+[![Bower version](https://badge.fury.io/bo/js-svglibrary.svg)](https://badge.fury.io/bo/js-svglibrary)
 [![npm version](http://img.shields.io/npm/v/js-svglibrary.svg?style=flat)](https://npmjs.org/package/js-svglibrary "View this project on npm")
 [![Build Status](https://travis-ci.org/pmeisen/js-svglibrary.svg?branch=master)](https://travis-ci.org/pmeisen/js-svglibrary)
 
